@@ -51,20 +51,8 @@ abstract class SqlSlaveThread extends Thread implements SqlThread{
 		$this->bufferSend = $bufferSend ?? new QuerySendQueue();
 		$this->bufferRecv = $bufferRecv ?? new QueryRecvQueue();
 
-		if(!libasynql::isPackaged()){
-			$classLoaders = [Server::getInstance()->getLoader()];
-
-			$deVirion = Server::getInstance()->getPluginManager()->getPlugin("DEVirion");
-
-			if($deVirion !== null && method_exists($deVirion, "getVirionClassLoader")){
-				$classLoaders[] = $deVirion->getVirionClassLoader();
-			}
-
-			$this->setClassLoaders($classLoaders);
-		}
-
+		$this->setClassLoaders([Server::getInstance()->getLoader()]);
 		$this->start(NativeThread::INHERIT_INI);
-	}
 
 	protected function onRun() : void{
 		$error = $this->createConn($resource);
